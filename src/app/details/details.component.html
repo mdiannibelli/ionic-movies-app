@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-button slot="start">
+      <ion-back-button defaultHref="/movies"></ion-back-button>
+    </ion-button>
+    <ion-title>{{ movie()?.title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (movie()) {
+  <ion-card>
+    <div
+      [style.height.px]="300"
+      [style.background-image]="
+        'url(' + imgBaseUrl + imgSize + movie()?.backdrop_path + ')'
+      "
+    ></div>
+    <ion-card-header>
+      <ion-card-title>{{ movie()?.title }}</ion-card-title>
+      <ion-card-subtitle>{{ movie()?.original_title }}</ion-card-subtitle>
+      <ion-text color="tertiary">
+        @for(genre of movie()?.genres; track genre.id; let isLast = $last) {
+        <span>{{ genre.name }} {{ !isLast ? "•" : "" }}</span>
+        } @empty {
+        <span>No genres found</span>
+        }
+      </ion-text>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-label color="primary">Overview</ion-label>
+      <ion-text>
+        <p color="medium">{{ movie()?.overview }}</p>
+      </ion-text>
+
+      <ion-item lines="none">
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-label>{{ movie()?.release_date | date : "yyyy" }}</ion-label>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-icon name="star-outline" slot="start"></ion-icon>
+        <ion-label>{{ movie()?.vote_average }} votes</ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  } @else {
+  <ion-item>
+    <ion-label>Cargando...</ion-label>
+  </ion-item>
+  }
+</ion-content>

@@ -1,20 +1,61 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title size="large">Movies App</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  @if(isLoading()) {
+  <ion-list>
+    @for(item of skeletonArray; let i = $index; track i) {
+    <ion-item lines="none" class="ion-padding-bottom">
+      <ion-avatar slot="start">
+        <ion-skeleton-text></ion-skeleton-text>
+      </ion-avatar>
+      <ion-skeleton-text
+        animated="true"
+        style="height: 40px"
+      ></ion-skeleton-text>
+    </ion-item>
+    }
+  </ion-list>
+  } @else if (error()){
+  <ion-alert
+    header="Error"
+    [message]="error()"
+    isOpen="true"
+    [buttons]="['Retry']"
+  >
+  </ion-alert>
+  } @else {
+  <ion-list>
+    @for(movie of movies(); track movie.id) {
+    <ion-item button (click)="getDetailMovie(movie.id)">
+      <ion-avatar slot="start">
+        <img
+          [src]="imgBaseUrl + imgSize + movie.poster_path"
+          [alt]="movie.title + ' poster'"
+        />
+      </ion-avatar>
+      <ion-label class="ion-text-wrap">
+        <h3>{{ movie.title }}</h3>
+        <p>{{ movie.release_date | date: 'yyyy' }}</p>
+      </ion-label>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+      <ion-badge slot="end">{{ movie.vote_average }}</ion-badge>
+    </ion-item>
+    } @empty { @if(!isLoading()) {
+    <ion-item>
+      <ion-label>No movies found</ion-label>
+    </ion-item>
+    } }
+  </ion-list>
+  }
+
+  <ion-infinite-scroll (ionInfinite)="loadMoreMovies($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more movies..."
+    />
+  </ion-infinite-scroll>
 </ion-content>
